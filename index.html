@@ -25,10 +25,31 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
     
-    <title>dreamcatchers_project</title>
+    <title>Dreamcatcher Studios | Creative Technology Studio</title>
   </head>
   <body>
     <div id="root"></div>
+    <div id="js-error-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);color:#fff;padding:24px;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;overflow:auto;"></div>
+    <script>
+      (function(){
+        function showError(msg){
+          var el = document.getElementById('js-error-overlay');
+          if(!el) return; el.style.display='block'; el.innerText = msg;
+        }
+        window.addEventListener('error', function(e){
+          var msg = (e && (e.message || (e.error && e.error.message))) || String(e);
+          var stack = (e && e.error && e.error.stack) || (e && e.stack) || '';
+          showError('Error: ' + msg + '\n\n' + stack);
+          console.error(e.error || e.message || e);
+        });
+        window.addEventListener('unhandledrejection', function(e){
+          var msg = (e && e.reason && (e.reason.message || String(e.reason))) || String(e.reason || e);
+          var stack = (e && e.reason && e.reason.stack) || '';
+          showError('Unhandled Promise Rejection: ' + msg + '\n\n' + stack);
+          console.error('UnhandledRejection', e.reason);
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
