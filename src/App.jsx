@@ -294,11 +294,7 @@ function ImageMarquee() {
     "./images/Work03.png",
     "./images/WhatsApp Image 2026-04-08 at 1.50.36 PM.jpeg",
     "./images/Work.png",
-<<<<<<< HEAD
     "./images/Work05.png",
-=======
-    "./images/Work01.png",
->>>>>>> e5509161db253a2d5199b17863449063a7465874
   ];
 
   const row2 = [
