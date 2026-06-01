@@ -126,15 +126,23 @@ function Hero() {
 
   return (
     <section className="hero" id="hero" ref={sectionRef}>
+      <Canvas
+        style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
+        camera={{ position: [0, 0, 5] }}
+      >
+        <CameraController />
+        <Particles />
+      </Canvas>
+
       <div className="hero-content">
-        <img src="./images/logo.png" alt="DreamCatcher Logo" className="hero-logo-small" />
         <div className="hero-word-container">
           {heroWords.map((item, i) => (
             <h1 key={i} className={`hero-word ${i === activeWord ? "active" : ""}`}>{item.word}</h1>
           ))}
         </div>
+        <p className="hero-desc">{heroWords[activeWord].desc}</p>
         <div className="hero-cta">
-          <a href="#work" className="btn-primary">View Our Work</a>
+          <a href="#work" className="btn-primary">Explore Our Work</a>
           <a href="#contact" className="btn-outline">Get In Touch</a>
         </div>
       </div>
@@ -142,39 +150,37 @@ function Hero() {
   );
 }
 
-/* HERO TAGLINE */
-function HeroTagline() {
+/* STATS/FEATURES SECTION */
+function StatsSection() {
   const ref = useRef();
-  const [activeWord, setActiveWord] = useState(0);
-
-  const descriptions = [
-    "We design immersive projection experiences that captivate attention and transform ordinary spaces into extraordinary visual spectacles.",
-    "Through creativity and cutting-edge technology, we produce dynamic moments that spark wonder and inspire lasting connections.",
-    "We transform bold ideas into groundbreaking realities, pushing the limits of projection mapping and experiential design.",
-    "From concept to execution, we craft stunning visual narratives that leave audiences breathless and redefine what's possible.",
-    "We blend art with technology to deliver large-scale projection shows that turn buildings into living, breathing canvases.",
-    "Our team creates immersive brand activations and interactive installations that engage every sense and tell powerful stories.",
+  const stats = [
+    { number: "9+", label: "Creative Experts" },
+    { number: "50+", label: "Projects Completed" },
+    { number: "15+", label: "Years Experience" },
+    { number: "100%", label: "Client Satisfaction" },
   ];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveWord((prev) => (prev + 1) % descriptions.length);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(".hero-tagline-text", { y: 40, opacity: 0 },
-        { scrollTrigger: { trigger: ref.current, start: "top 90%", toggleActions: "play none none none" },
-          y: 0, opacity: 1, duration: 1, ease: "power3.out", immediateRender: false });
+      ref.current.querySelectorAll(".stat-card").forEach((card, i) => {
+        gsap.fromTo(card, { y: 40, opacity: 0 },
+          { scrollTrigger: { trigger: card, start: "top 85%", toggleActions: "play none none none" },
+            y: 0, opacity: 1, duration: 0.8, delay: i * 0.1, ease: "power3.out", immediateRender: false });
+      });
     }, ref);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section className="hero-tagline-section" ref={ref}>
-      <p className="hero-tagline-text">{descriptions[activeWord]}</p>
+    <section className="stats-section" ref={ref}>
+      <div className="stats-grid">
+        {stats.map((stat, i) => (
+          <div key={i} className="stat-card">
+            <div className="stat-number">{stat.number}</div>
+            <div className="stat-label">{stat.label}</div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -212,8 +218,8 @@ function Showreel() {
         <span className="showreel-play-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
             {isPlaying
-              ? <><rect x="5" y="4" width="5" height="16" rx="1" fill="#FF8C00" /><rect x="14" y="4" width="5" height="16" rx="1" fill="#FF8C00" /></>
-              : <path d="M6 3L20 12L6 21V3Z" fill="#FF8C00" />}
+              ? <><rect x="5" y="4" width="5" height="16" rx="1" fill="#00B8FF" /><rect x="14" y="4" width="5" height="16" rx="1" fill="#00B8FF" /></>
+              : <path d="M6 3L20 12L6 21V3Z" fill="#00B8FF" />}
           </svg>
         </span>
         <span className="showreel-label">Showreel</span>
@@ -278,59 +284,7 @@ function About() {
   );
 }
 
-/* SCROLLING IMAGE MARQUEE */
-function ImageMarquee() {
-  const row1 = [
-    "./images/facade.jpeg",
-    "./images/PH3_4191.jpg.jpeg",
-    "./images/Work07.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.34 PM.jpeg",
-    "./images/Work01.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.35 PM (1).jpeg",
-    "./images/product.png",
-    "./images/Work03.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.36 PM.jpeg",
-    "./images/Work.png",
-    "./images/Work05.png",
-  ];
-
-  const row2 = [
-    "./images/WhatsApp Image 2026-04-08 at 1.50.35 PM.jpeg",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.35 PM (2).jpeg",
-    "./images/Work02.png",
-    "./images/PH3_5237.jpg.jpeg",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.36 PM (1).jpeg",
-    "./images/Work04.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.36 PM (2).jpeg",
-    "./images/Work06.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.35 PM (3).jpeg",
-    "./images/Work08.png",
-    "./images/WhatsApp Image 2026-04-08 at 1.50.37 PM.jpeg",
-    "./images/Work02.png",
-  ];
-
-  const renderRow = (images, direction) => {
-    const doubled = [...images, ...images];
-    return (
-      <div className={`marquee-track marquee-${direction}`}>
-        {doubled.map((src, i) => (
-          <div key={i} className="marquee-item">
-            <img src={src} alt="" loading="lazy" />
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  return (
-    <section className="marquee-section">
-      <div className="marquee-fade-left"></div>
-      <div className="marquee-fade-right"></div>
-      {renderRow(row1, "left")}
-      {renderRow(row2, "right")}
-    </section>
-  );
-}
+/* SCROLLING IMAGE MARQUEE - REMOVED FOR STREAMLINED DESIGN */
 
 /* PROJECTS / WORK */
 function Projects() {
@@ -898,28 +852,28 @@ function LoadingScreen({ onFinish }) {
       <div className="loader-content">
         <div className="loader-reels">
           <svg className="loader-reel loader-reel-big" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="60" cy="60" r="56" stroke="rgba(255,140,0,0.3)" strokeWidth="2" />
+            <circle cx="60" cy="60" r="56" stroke="rgba(0, 118, 212, 0.3)" strokeWidth="2" />
             <circle cx="60" cy="60" r="56" stroke="url(#reelGrad)" strokeWidth="3" strokeDasharray="8 12" />
-            <circle cx="60" cy="60" r="12" fill="rgba(255,140,0,0.15)" stroke="#FF8C00" strokeWidth="1.5" />
-            <circle cx="60" cy="26" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="89" cy="43" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="89" cy="77" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="60" cy="94" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="31" cy="77" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="31" cy="43" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <defs><linearGradient id="reelGrad" x1="0" y1="0" x2="120" y2="120"><stop stopColor="#FF8C00" /><stop offset="1" stopColor="#FFB347" /></linearGradient></defs>
+            <circle cx="60" cy="60" r="12" fill="rgba(0, 118, 212, 0.15)" stroke="#0076D4" strokeWidth="1.5" />
+            <circle cx="60" cy="26" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="89" cy="43" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="89" cy="77" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="60" cy="94" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="31" cy="77" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="31" cy="43" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <defs><linearGradient id="reelGrad" x1="0" y1="0" x2="120" y2="120"><stop stopColor="#0076D4" /><stop offset="1" stopColor="#00B8FF" /></linearGradient></defs>
           </svg>
           <svg className="loader-reel loader-reel-small" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="60" cy="60" r="56" stroke="rgba(255,140,0,0.3)" strokeWidth="2" />
+            <circle cx="60" cy="60" r="56" stroke="rgba(0, 118, 212, 0.3)" strokeWidth="2" />
             <circle cx="60" cy="60" r="56" stroke="url(#reelGrad2)" strokeWidth="3" strokeDasharray="8 12" />
-            <circle cx="60" cy="60" r="12" fill="rgba(255,140,0,0.15)" stroke="#FF8C00" strokeWidth="1.5" />
-            <circle cx="60" cy="26" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="89" cy="43" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="89" cy="77" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="60" cy="94" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="31" cy="77" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <circle cx="31" cy="43" r="10" fill="rgba(255,140,0,0.08)" stroke="rgba(255,140,0,0.4)" strokeWidth="1.5" />
-            <defs><linearGradient id="reelGrad2" x1="0" y1="0" x2="120" y2="120"><stop stopColor="#FF8C00" /><stop offset="1" stopColor="#FFB347" /></linearGradient></defs>
+            <circle cx="60" cy="60" r="12" fill="rgba(0, 118, 212, 0.15)" stroke="#0076D4" strokeWidth="1.5" />
+            <circle cx="60" cy="26" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="89" cy="43" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="89" cy="77" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="60" cy="94" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="31" cy="77" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <circle cx="31" cy="43" r="10" fill="rgba(0, 118, 212, 0.08)" stroke="rgba(0, 118, 212, 0.4)" strokeWidth="1.5" />
+            <defs><linearGradient id="reelGrad2" x1="0" y1="0" x2="120" y2="120"><stop stopColor="#0076D4" /><stop offset="1" stopColor="#00B8FF" /></linearGradient></defs>
           </svg>
           <div className="loader-film-strip">
             <div className="film-cell"></div><div className="film-cell"></div><div className="film-cell"></div>
@@ -978,26 +932,14 @@ export default function App() {
         <>
           {currentPage === "home" ? (
             <>
-              <Canvas
-                style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }}
-                camera={{ position: [0, 0, 5] }}
-              >
-                <CameraController />
-                <Particles />
-              </Canvas>
-
-              <Navbar />
-              <Hero />
-              <HeroTagline />
-              <Showreel />
-              <About />
-              <ImageMarquee />
-              <Projects />
-              <Services />
-              <Team onTeamClick={handleTeamClick} />
-              <CTASection />
-              <Contact />
-              <Footer />
+                  <Navbar />
+                  <Hero />
+                  <Services />
+                  <Projects />
+                  <About />
+                  <Team onTeamClick={handleTeamClick} />
+                  <Contact />
+                  <Footer />
             </>
           ) : currentPage === "team" && teamData ? (
             <TeamPage onBack={handleBackToHome} team={teamData} />
@@ -1040,7 +982,7 @@ export default function App() {
 
         .loader-reel {
           position: absolute;
-          filter: drop-shadow(0 0 15px rgba(255,140,0,0.3));
+          filter: drop-shadow(0 0 15px rgba(0, 184, 255,0.3));
         }
 
         .loader-reel-big {
@@ -1072,9 +1014,9 @@ export default function App() {
         .film-cell {
           width: 18px;
           height: 14px;
-          border: 1px solid rgba(255,140,0,0.25);
+          border: 1px solid rgba(0, 184, 255,0.25);
           border-radius: 2px;
-          background: rgba(255,140,0,0.05);
+          background: rgba(0, 184, 255,0.05);
         }
 
         @keyframes reelSpin {
@@ -1098,10 +1040,10 @@ export default function App() {
 
         .loader-bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #FF8C00, #FFB347);
+          background: linear-gradient(90deg, #0076D4, #00B8FF);
           border-radius: 2px;
           transition: width 0.15s ease;
-          box-shadow: 0 0 10px rgba(255,140,0,0.5);
+          box-shadow: 0 0 10px rgba(0, 118, 212, 0.5);
         }
 
         .loader-percent {
@@ -1113,7 +1055,7 @@ export default function App() {
         }
 
         ::selection {
-          background: rgba(255,140,0,0.3);
+          background: rgba(0, 118, 212, 0.3);
           color: #fff;
         }
 
@@ -1134,11 +1076,28 @@ export default function App() {
         }
 
         body {
-          background: #0a0a0a;
+          background: linear-gradient(135deg, #001a4d 0%, #002d7a 25%, #004d99 50%, #002d7a 75%, #001a4d 100%);
+          background-attachment: fixed;
           color: #fff;
           font-family: 'Inter', -apple-system, sans-serif;
           overflow-x: hidden;
           -webkit-font-smoothing: antialiased;
+          position: relative;
+        }
+
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: 
+            radial-gradient(circle at 20% 50%, rgba(0, 118, 212, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(0, 184, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+          pointer-events: none;
+          z-index: 0;
         }
 
         /* NAVBAR */
@@ -1148,13 +1107,13 @@ export default function App() {
           left: 0;
           width: 100%;
           z-index: 1000;
-          padding: 24px 40px;
+          padding: 28px 60px;
           transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
         }
 
         .nav-scrolled {
-          padding: 16px 40px;
-          background: rgba(10,10,10,0.92);
+          padding: 16px 60px;
+          background: rgba(15, 15, 46, 0.95);
           backdrop-filter: blur(30px) saturate(1.5);
           -webkit-backdrop-filter: blur(30px) saturate(1.5);
           border-bottom: 1px solid rgba(255,255,255,0.04);
@@ -1170,7 +1129,7 @@ export default function App() {
         .nav-brand {
           font-size: 18px;
           font-weight: 600;
-          color: #FF8C00;
+          color: #00B8FF;
           text-decoration: none;
           letter-spacing: 1.5px;
           text-transform: uppercase;
@@ -1208,7 +1167,7 @@ export default function App() {
           left: 0;
           width: 0;
           height: 1px;
-          background: #FF8C00;
+          background: #00B8FF;
           transition: width 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
         }
 
@@ -1230,7 +1189,7 @@ export default function App() {
         }
 
         .nav-socials a:hover {
-          color: #FF8C00;
+          color: #00B8FF;
           transform: translateY(-2px);
         }
 
@@ -1279,8 +1238,18 @@ export default function App() {
           align-items: center;
           position: relative;
           padding: 0 60px;
-          padding-top: 100px;
-          min-height: 100vh;
+          overflow: hidden;
+          z-index: 10;
+        }
+
+        .hero-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          max-width: 1000px;
+          position: relative;
+          z-index: 2;
         }
 
         .hero-content {
@@ -1297,7 +1266,7 @@ export default function App() {
           height: auto;
           object-fit: contain;
           margin-bottom: 30px;
-          filter: drop-shadow(0 0 60px rgba(255,140,0,0.15));
+          filter: drop-shadow(0 0 60px rgba(0, 184, 255,0.15));
           animation: logoFloat 6s ease-in-out infinite, logoGlow 4s ease-in-out infinite alternate;
           perspective: 800px;
         }
@@ -1310,8 +1279,8 @@ export default function App() {
         }
 
         @keyframes logoGlow {
-          0% { filter: drop-shadow(0 0 40px rgba(255,140,0,0.1)) drop-shadow(0 0 80px rgba(255,140,0,0.05)); }
-          100% { filter: drop-shadow(0 0 60px rgba(255,140,0,0.3)) drop-shadow(0 0 120px rgba(255,140,0,0.1)); }
+          0% { filter: drop-shadow(0 0 40px rgba(0, 184, 255,0.1)) drop-shadow(0 0 80px rgba(0, 184, 255,0.05)); }
+          100% { filter: drop-shadow(0 0 60px rgba(0, 184, 255,0.3)) drop-shadow(0 0 120px rgba(0, 184, 255,0.1)); }
         }
 
         .hero-word-container {
@@ -1330,7 +1299,7 @@ export default function App() {
           font-weight: 800;
           letter-spacing: -2px;
           text-transform: uppercase;
-          background: linear-gradient(135deg, #FF8C00 0%, #FFB347 50%, #FF8C00 100%);
+          background: linear-gradient(135deg, #0076D4 0%, #00B8FF 50%, #D0FF00 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -1345,6 +1314,17 @@ export default function App() {
           transform: translateY(0);
         }
 
+        .hero-desc {
+          font-size: 18px;
+          font-weight: 300;
+          line-height: 1.8;
+          color: rgba(255,255,255,0.6);
+          max-width: 600px;
+          margin-bottom: 40px;
+          transition: opacity 0.4s ease;
+          min-height: 50px;
+        }
+
         .hero-cta {
           display: flex;
           gap: 20px;
@@ -1357,8 +1337,8 @@ export default function App() {
           align-items: center;
           gap: 10px;
           padding: 18px 40px;
-          background: #FF8C00;
-          color: #0a0a0a;
+          background: linear-gradient(135deg, #0076D4 0%, #00B8FF 100%);
+          color: #fff;
           border: none;
           border-radius: 50px;
           font-size: 13px;
@@ -1372,9 +1352,9 @@ export default function App() {
         }
 
         .btn-primary:hover {
-          background: #FFB347;
+          background: linear-gradient(135deg, #7C3AED 0%, #D946EF 100%);
           transform: translateY(-3px);
-          box-shadow: 0 20px 60px rgba(255,140,0,0.3);
+          box-shadow: 0 20px 60px rgba(0, 118, 212, 0.4);
         }
 
         .btn-outline {
@@ -1383,8 +1363,8 @@ export default function App() {
           gap: 10px;
           padding: 18px 40px;
           background: transparent;
-          color: #FF8C00;
-          border: 1px solid rgba(255,140,0,0.4);
+          color: #0076D4;
+          border: 1px solid rgba(0, 118, 212, 0.4);
           border-radius: 50px;
           font-size: 13px;
           font-weight: 500;
@@ -1397,8 +1377,8 @@ export default function App() {
         }
 
         .btn-outline:hover {
-          border-color: #FF8C00;
-          background: rgba(255,140,0,0.08);
+          border-color: #0076D4;
+          background: rgba(0, 118, 212, 0.08);
           transform: translateY(-3px);
         }
 
@@ -1409,7 +1389,7 @@ export default function App() {
           font-weight: 500;
           letter-spacing: 4px;
           text-transform: uppercase;
-          color: #FF8C00;
+          color: #0076D4;
           margin-bottom: 8px;
           position: relative;
           padding-left: 36px;
@@ -1422,7 +1402,7 @@ export default function App() {
           top: 50%;
           width: 24px;
           height: 1px;
-          background: #FF8C00;
+          background: #0076D4;
         }
 
         .section-heading {
@@ -1443,7 +1423,7 @@ export default function App() {
 
         /* ABOUT */
         .about-section {
-          padding: 160px 60px;
+          padding: 120px 60px;
           max-width: 1200px;
           margin: 0 auto;
         }
@@ -1459,8 +1439,6 @@ export default function App() {
           margin-bottom: 40px;
           letter-spacing: -1px;
         }
-
-        
 
         .about-text {
           font-size: 17px;
@@ -1518,7 +1496,7 @@ export default function App() {
         .showreel-label {
           position: relative;
           z-index: 2;
-          background: linear-gradient(135deg, #FF8C00 0%, #FFB347 50%, #FF8C00 100%);
+          background: linear-gradient(135deg, #0076D4 0%, #00B8FF 50%, #D0FF00 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -1540,13 +1518,13 @@ export default function App() {
             from 0deg,
             transparent 0%,
             transparent 55%,
-            rgba(255,140,0,0.1) 65%,
-            rgba(255,140,0,0.4) 72%,
-            #FF8C00 78%,
+            rgba(0, 118, 212, 0.1) 65%,
+            rgba(0, 118, 212, 0.4) 72%,
+            #0076D4 78%,
             #fff 80%,
-            #FF8C00 82%,
-            rgba(255,140,0,0.4) 88%,
-            rgba(255,140,0,0.1) 95%,
+            #0076D4 82%,
+            rgba(0, 118, 212, 0.4) 88%,
+            rgba(0, 118, 212, 0.1) 95%,
             transparent 100%
           );
           animation: saber-rotate 3s linear infinite;
@@ -1578,7 +1556,7 @@ export default function App() {
         }
 
         .showreel-text:hover::after {
-          box-shadow: inset 0 0 30px rgba(255,140,0,0.05);
+          box-shadow: inset 0 0 30px rgba(0, 184, 255,0.05);
         }
 
         .showreel-play-icon {
@@ -1587,15 +1565,15 @@ export default function App() {
           justify-content: center;
           width: 56px;
           height: 56px;
-          border: 2px solid #FF8C00;
+          border: 2px solid #0076D4;
           border-radius: 50%;
           flex-shrink: 0;
           transition: all 0.4s ease;
         }
 
         .showreel-text:hover .showreel-play-icon {
-          background: rgba(255,140,0,0.1);
-          box-shadow: 0 0 40px rgba(255,140,0,0.2);
+          background: rgba(0, 118, 212, 0.1);
+          box-shadow: 0 0 40px rgba(0, 118, 212, 0.2);
         }
 
         .showreel-video-wrap {
@@ -1707,12 +1685,12 @@ export default function App() {
         }
 
         .marquee-item:hover::after {
-          border-color: rgba(255,140,0,0.2);
+          border-color: rgba(0, 184, 255,0.2);
         }
 
         /* WORK / PROJECTS */
         .work-section {
-          padding: 140px 60px;
+          padding: 120px 60px;
           max-width: 1400px;
           margin: 0 auto;
         }
@@ -1721,6 +1699,7 @@ export default function App() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 30px;
+          margin-top: 60px;
         }
 
         .project-card-large {
@@ -1779,15 +1758,58 @@ export default function App() {
           flex-wrap: wrap;
         }
 
-        .project-tag {
-          padding: 6px 16px;
-          border: 1px solid rgba(255,140,0,0.4);
-          border-radius: 50px;
-          font-size: 11px;
-          font-weight: 400;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          color: #FF8C00;
+        /* STATS SECTION */
+        .stats-section {
+          padding: 80px 60px;
+          background: linear-gradient(135deg, rgba(0, 118, 212, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+          margin: 60px 0;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 40px;
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
+        .stat-card {
+          text-align: center;
+          padding: 40px 20px;
+          border: 1px solid rgba(0, 118, 212, 0.2);
+          border-radius: 12px;
+          background: rgba(0, 118, 212, 0.05);
+          transition: all 0.4s ease;
+        }
+
+        .stat-card:hover {
+          border-color: rgba(0, 118, 212, 0.4);
+          background: rgba(0, 118, 212, 0.1);
+          transform: translateY(-4px);
+        }
+
+        .stat-number {
+          font-size: 48px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #0076D4 0%, #00B8FF 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 12px;
+        }
+
+        .stat-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.7);
+          letter-spacing: 1px;
+        }
+
+        .project-card-tags {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
         }
 
         .project-card-title {
@@ -1800,7 +1822,7 @@ export default function App() {
         .project-card-more {
           font-size: 13px;
           font-weight: 400;
-          color: #FF8C00;
+          color: #0076D4;
           letter-spacing: 2px;
           text-transform: uppercase;
           transition: transform 0.3s ease;
@@ -1813,15 +1835,16 @@ export default function App() {
 
         /* SERVICES */
         .services-section {
-          padding: 140px 60px;
+          padding: 120px 60px;
           max-width: 1400px;
           margin: 0 auto;
         }
 
         .services-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 30px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 40px;
+          margin-top: 60px;
         }
 
         .service-card {
@@ -1839,7 +1862,7 @@ export default function App() {
           position: absolute;
           inset: 0;
           border-radius: 16px;
-          background: linear-gradient(135deg, rgba(255,140,0,0.04) 0%, transparent 50%);
+          background: linear-gradient(135deg, rgba(0, 118, 212, 0.04) 0%, transparent 50%);
           opacity: 0;
           transition: opacity 0.6s ease;
           pointer-events: none;
@@ -1851,9 +1874,9 @@ export default function App() {
         }
 
         .service-card:hover {
-          border-color: rgba(255,140,0,0.2);
+          border-color: rgba(0, 118, 212, 0.2);
           transform: translateY(-6px);
-          box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,140,0,0.05);
+          box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(0, 118, 212, 0.05);
         }
 
         .service-media {
@@ -1904,7 +1927,7 @@ export default function App() {
         }
 
         .service-card:hover .service-content h3 {
-          color: #FF8C00;
+          color: #0076D4;
         }
 
         .service-content p {
@@ -1918,18 +1941,18 @@ export default function App() {
           display: inline-block;
           margin-top: 18px;
           font-size: 20px;
-          color: rgba(255,140,0,0.3);
+          color: rgba(0, 118, 212, 0.3);
           transition: all 0.4s ease;
         }
 
         .service-card:hover .service-arrow {
-          color: #FF8C00;
+          color: #0076D4;
           transform: translateX(8px);
         }
 
         /* TEAM SECTION */
         .team-section {
-          padding: 80px 60px;
+          padding: 120px 60px;
           max-width: 1400px;
           margin: 0 auto;
         }
@@ -1953,8 +1976,8 @@ export default function App() {
 
         .team-card:hover {
           transform: translateY(-8px);
-          border-color: rgba(255,140,0,0.2);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(255,140,0,0.05);
+          border-color: rgba(0, 184, 255,0.2);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0, 184, 255,0.05);
         }
 
         .team-img-wrap {
@@ -1998,7 +2021,7 @@ export default function App() {
           font-weight: 300;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: #FF8C00;
+          color: #0076D4;
         }
 
         .team-card {
@@ -2054,7 +2077,7 @@ export default function App() {
         }
 
         .team-modal-close:hover {
-          color: #FF8C00;
+          color: #00B8FF;
         }
 
         .team-modal-header {
@@ -2069,7 +2092,7 @@ export default function App() {
           height: 80px;
           border-radius: 50%;
           object-fit: cover;
-          border: 2px solid rgba(255,140,0,0.3);
+          border: 2px solid rgba(0, 118, 212, 0.3);
         }
 
         .team-modal-name {
@@ -2084,7 +2107,7 @@ export default function App() {
           font-weight: 400;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: #FF8C00;
+          color: #0076D4;
         }
 
         .team-modal-subtitle {
@@ -2121,7 +2144,7 @@ export default function App() {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background: #FF8C00;
+          background: #0076D4;
         }
 
         /* TEAM PAGE */
@@ -2149,8 +2172,8 @@ export default function App() {
           align-items: center;
           gap: 8px;
           background: none;
-          border: 1px solid rgba(255,140,0,0.3);
-          color: #FF8C00;
+          border: 1px solid rgba(0, 118, 212, 0.3);
+          color: #0076D4;
           padding: 12px 24px;
           border-radius: 50px;
           font-size: 14px;
@@ -2163,8 +2186,8 @@ export default function App() {
         }
 
         .team-page-back-btn:hover {
-          background: rgba(255,140,0,0.1);
-          border-color: #FF8C00;
+          background: rgba(0, 118, 212, 0.1);
+          border-color: #0076D4;
           transform: translateX(-6px);
         }
 
@@ -2177,7 +2200,7 @@ export default function App() {
           font-weight: 800;
           letter-spacing: -1px;
           margin-bottom: 20px;
-          background: linear-gradient(135deg, #FF8C00 0%, #FFB347 50%, #FF8C00 100%);
+          background: linear-gradient(135deg, #0076D4 0%, #00B8FF 50%, #D0FF00 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -2208,9 +2231,9 @@ export default function App() {
         }
 
         .team-page-card:hover {
-          border-color: rgba(255,140,0,0.2);
+          border-color: rgba(0, 118, 212, 0.2);
           transform: translateY(-8px);
-          box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 40px rgba(255,140,0,0.05);
+          box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 40px rgba(0, 118, 212, 0.05);
         }
 
         .team-page-img-wrap {
@@ -2256,7 +2279,7 @@ export default function App() {
           font-weight: 400;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: #FF8C00;
+          color: #0076D4;
           margin-bottom: 24px;
         }
 
@@ -2269,7 +2292,7 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: rgba(255,140,0,0.8);
+          color: rgba(0, 118, 212, 0.8);
           margin-bottom: 16px;
         }
 
@@ -2298,7 +2321,7 @@ export default function App() {
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: rgba(255,140,0,0.6);
+          background: rgba(0, 118, 212, 0.6);
         }
 
         .team-section-header {
@@ -2317,9 +2340,9 @@ export default function App() {
         .team-view-all-btn {
           padding: 14px 32px;
           background: transparent;
-          border: 1px solid rgba(255,140,0,0.3);
+          border: 1px solid rgba(0, 118, 212, 0.3);
           border-radius: 50px;
-          color: #FF8C00;
+          color: #0076D4;
           font-size: 13px;
           font-weight: 500;
           letter-spacing: 2px;
@@ -2330,8 +2353,8 @@ export default function App() {
         }
 
         .team-view-all-btn:hover {
-          background: rgba(255,140,0,0.1);
-          border-color: #FF8C00;
+          background: rgba(0, 118, 212, 0.1);
+          border-color: #0076D4;
           transform: translateY(-3px);
         }
 
@@ -2351,7 +2374,7 @@ export default function App() {
           transform: translate(-50%, -50%);
           width: 600px;
           height: 600px;
-          background: radial-gradient(circle, rgba(255,140,0,0.06) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(0, 184, 255,0.06) 0%, transparent 70%);
           pointer-events: none;
         }
 
@@ -2406,7 +2429,7 @@ export default function App() {
 
         /* CONTACT */
         .contact-section {
-          padding: 160px 60px;
+          padding: 120px 60px;
           max-width: 1000px;
           margin: 0 auto;
         }
@@ -2468,7 +2491,7 @@ export default function App() {
         }
 
         input:focus, textarea:focus {
-          border-color: rgba(255,140,0,0.6);
+          border-color: rgba(0, 184, 255,0.6);
         }
 
         textarea {
@@ -2481,9 +2504,9 @@ export default function App() {
           align-items: center;
           gap: 14px;
           padding: 20px 40px;
-          border: 1px solid rgba(255,140,0,0.35);
+          border: 1px solid rgba(0, 184, 255,0.35);
           background: transparent;
-          color: #FF8C00;
+          color: #00B8FF;
           cursor: pointer;
           border-radius: 50px;
           font-size: 13px;
@@ -2501,7 +2524,7 @@ export default function App() {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(255,140,0,0.1), transparent);
+          background: linear-gradient(135deg, rgba(0, 184, 255,0.1), transparent);
           opacity: 0;
           transition: opacity 0.4s ease;
           border-radius: 50px;
@@ -2512,9 +2535,9 @@ export default function App() {
         }
 
         .contact-form button:hover {
-          border-color: #FF8C00;
+          border-color: #00B8FF;
           transform: translateX(8px);
-          box-shadow: 0 0 40px rgba(255,140,0,0.1);
+          box-shadow: 0 0 40px rgba(0, 184, 255,0.1);
         }
 
         .contact-form button svg {
@@ -2650,7 +2673,7 @@ export default function App() {
         }
 
         .footer-socials a:hover {
-          color: #FF8C00;
+          color: #00B8FF;
           transform: translateY(-2px);
         }
 
@@ -2680,7 +2703,7 @@ export default function App() {
         }
 
         .footer-col a:hover {
-          color: #FF8C00;
+          color: #00B8FF;
         }
 
         .footer-col p {
